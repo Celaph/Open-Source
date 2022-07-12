@@ -24,7 +24,6 @@ class Dropdown(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.bot.reload_extension(f"commands.{self.values[0]}")
-        print(1)
         await interaction.response.send_message(f"Reloaded {self.values[0]}", ephemeral=True)
 
 
