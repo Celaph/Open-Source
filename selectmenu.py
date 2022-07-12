@@ -18,13 +18,20 @@ class Dropdown(discord.ui.Select):
 
         super().__init__(
             placeholder="Choose the addon to reload...",
-            min_values=1,
-            max_values=1,
+            max_values=len(options),
             options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        self.bot.reload_extension(f"commands.{self.values[0]}")
-        await interaction.response.send_message(f"Reloaded {self.values[0]}", ephemeral=True)
+        try:
+            for e in self.values:
+                self.bot.reload_extension(f"commands.{e}")
+            await interaction.response.send_message(f"Reloaded {', '.join([f'`{v}`' for v in self.values])}",
+                                                    ephemeral=True)
+        except discord.errors.ExtensionNotLoaded:
+            for e in self.values:
+                self.bot.load_extension(f"commands.{e}")
+            await interaction.response.send_message(f"Reloaded {', '.join([f'`{v}`' for v in self.values])}",
+                                                    ephemeral=True)
 
 
 class DropdownView(discord.ui.View):
@@ -47,5 +54,3 @@ class Settings(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Settings(bot))
-
-    
